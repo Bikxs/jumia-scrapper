@@ -30,13 +30,12 @@ public class Application implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		LOGGER.info("Application for Scrapping Jumia");
 
-
 		PrintWriter pw = new PrintWriter(new FileWriter(new File("jumia.csv")));
-
-
+		PrintWriter pwFound = new PrintWriter(new FileWriter(new File("found_treasures.csv")));
 
 
 		pw.println("Subcatory;Item;Price;Discount;href");
+		pwFound.println("Subcatory;Item;Price;Discount;href");
 		List<SubCategory> subcategories = scrappingService.scrapeCategories();
 		Collections.shuffle(subcategories);
 		for (SubCategory subCategory :
@@ -46,11 +45,16 @@ public class Application implements CommandLineRunner {
 			for (Item item:
 				 items) {
 				pw.println(item.toCSVString());
-
-				System.out.println("\t" + item.toString());
+				if(item.getDiscount() >= 99.5){
+					pwFound.println(item.toCSVString());
+					System.out.println("\tFOUND!!! " + item.toString());
+				}
+				
 			}
 			pw.flush();
+			pwFound.flush();
 		}
-		pw.close();;
+		pw.close();
+		pwFound.close();
 	}
 }

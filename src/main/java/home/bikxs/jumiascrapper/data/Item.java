@@ -32,12 +32,13 @@ public class Item {
     }
 
     public Double getDiscount() {
-        return discount;
+        if(discount== null) return 0.0;
+        return Math.abs(discount);
     }
 
     @Override
     public String toString() {
-        return description + " " + price;
+        return description + " " + price + " " + href;
     }
 
     public String toCSVString() {
@@ -45,7 +46,7 @@ public class Item {
         sb.append(subCategory.getName().replace(";", "")).append(";");
         sb.append(description.replace(";", "")).append(";");
         sb.append(price).append(";");
-        sb.append(discount).append(";");
+        sb.append(getDiscount()).append(";");
         sb.append(href).append(";");
         return sb.toString();
     }

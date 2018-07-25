@@ -56,12 +56,12 @@ public class ScrappingService {
         while (true) {
             i++;
             String url = subCategory.getHref() + (i == 1 ? "" : "?page=" + i);
-            LOGGER.info(url);
+            //LOGGER.info(url);
             //random wait
             try {
                 Thread.sleep(1500L + ((long) Math.random() * 5000));
             } catch (InterruptedException e) {
-                System.out.println("Interupted " + e.getMessage());
+                System.out.println("Interrupted " + e.getMessage());
             }
             HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
             ResponseEntity<String> respEntity=null;
@@ -86,20 +86,27 @@ public class ScrappingService {
                 Double price = parse(itmElement.getElementsByClass("price ").first());
                 Double discount = parse(itmElement.getElementsByClass("sale-flag-percent").first());
                 Item item = new Item(subCategory, title, href, price, discount);
-                System.out.println(item.toString());
+                //System.out.println(item.toString());
                 items.add(item);
             }
 
         }
-        LOGGER.info("Found " + items.size() + " items for " + subCategory.getName());
+        //LOGGER.info("Found " + items.size() + " items for " + subCategory.getName());
         return items;
     }
 
     private Double parse(Element element) {
         if (element == null) return null;
         String text = element.text().replace("%", "").replace("KSh", "").replace(",", "").trim();
-        return Double.parseDouble(text);
-
+        Double result = null;
+        try{
+            result = Double.parseDouble(text);
+        }
+        catch (Exception ex)
+        {
+            LOGGER.error(text + ": " +  ex.getMessage());
+        }
+        return result;
     }
 
     private static HttpHeaders createHeadeers() {
