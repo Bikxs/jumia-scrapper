@@ -36,16 +36,17 @@ public class Application implements CommandLineRunner {
 
 
 
-		pw.println("Subcatory;Item;Price;Discount");
+		pw.println("Subcatory;Item;Price;Discount;href");
 		List<SubCategory> subcategories = scrappingService.scrapeCategories();
 		Collections.shuffle(subcategories);
 		for (SubCategory subCategory :
 				subcategories) {
-			System.out.println(subCategory.toString());
+			//System.out.println(subCategory.toString());
 			List<Item> items = scrappingService.scrapeCategories(subCategory);
 			for (Item item:
 				 items) {
 				pw.println(item.toCSVString());
+
 				System.out.println("\t" + item.toString());
 			}
 			pw.flush();

@@ -17,7 +17,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -52,29 +51,45 @@ public class ScrappingService {
     }
 
     public List<Item> scrapeCategories(SubCategory subCategory) {
-        //random wait
-        try {
-            Thread.sleep(1500L + ((long)Math.random() * 15000));
-        } catch (InterruptedException e) {
-            System.out.println("Interupted " + e.getMessage());
-        }
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-        ResponseEntity<String> respEntity = restTemplate.exchange(subCategory.getHref(), HttpMethod.GET, entity, String.class);
-        String queired = respEntity.getBody();
-        Document doc = Jsoup.parse(queired);
-        Elements itmElements = doc.getElementsByClass("sku -gallery");
-
+        int i = 0;
         List<Item> items = new ArrayList<>();
-        for (Element itmElement :
-                itmElements) {
-            //System.out.println(itmElement.text());
-            String title = itmElement.getElementsByClass("title").first().text();
-            String href = itmElement.getElementsByClass("link").attr("href");
-            Double price = parse(itmElement.getElementsByClass("price ").first());
-            Double discount = parse(itmElement.getElementsByClass("sale-flag-percent").first());
-            Item item = new Item(subCategory, title, href, price, discount);
-            System.out.println(item.toString());
-            items.add(item);
+        while (true) {
+            i++;
+            String url = subCategory.getHref() + (i == 1 ? "" : "?page=" + i);
+            LOGGER.info(url);
+            //random wait
+            try {
+                Thread.sleep(1500L + ((long) Math.random() * 5000));
+            } catch (InterruptedException e) {
+                System.out.println("Interupted " + e.getMessage());
+            }
+            HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+            ResponseEntity<String> respEntity=null;
+            try{
+                respEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            }catch (Exception ex){
+                break;
+            }
+
+            String queired = respEntity.getBody();
+            Document doc = Jsoup.parse(queired);
+            Elements itmElements = doc.getElementsByClass("sku -gallery");
+
+            if (itmElements.isEmpty())
+                break;
+
+            for (Element itmElement :
+                    itmElements) {
+                //System.out.println(itmElement.text());
+                String title = itmElement.getElementsByClass("title").first().text();
+                String href = itmElement.getElementsByClass("link").attr("href");
+                Double price = parse(itmElement.getElementsByClass("price ").first());
+                Double discount = parse(itmElement.getElementsByClass("sale-flag-percent").first());
+                Item item = new Item(subCategory, title, href, price, discount);
+                System.out.println(item.toString());
+                items.add(item);
+            }
+
         }
         LOGGER.info("Found " + items.size() + " items for " + subCategory.getName());
         return items;
@@ -97,12 +112,13 @@ public class ScrappingService {
         headers.add("Connection", "keep-alive");
         return headers;
     }
+
     private RestTemplate restTemplate() {
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 
-        //Proxy proxy= new Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("172.23.12.226", 4145));
-        //requestFactory.setProxy(proxy);
+        Proxy proxy = new Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("172.23.12.226", 4145));
+        requestFactory.setProxy(proxy);
 
         return new RestTemplate(requestFactory);
     }

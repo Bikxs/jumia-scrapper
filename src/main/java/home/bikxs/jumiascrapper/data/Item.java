@@ -45,7 +45,8 @@ public class Item {
         sb.append(subCategory.getName().replace(";", "")).append(";");
         sb.append(description.replace(";", "")).append(";");
         sb.append(price).append(";");
-        sb.append(discount);
+        sb.append(discount).append(";");
+        sb.append(href).append(";");
         return sb.toString();
     }
 }
