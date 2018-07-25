@@ -67,13 +67,14 @@ public class ScrappingService {
         List<Item> items = new ArrayList<>();
         for (Element itmElement :
                 itmElements) {
-            System.out.println(itmElement.text());
+            //System.out.println(itmElement.text());
             String title = itmElement.getElementsByClass("title").first().text();
             String href = itmElement.getElementsByClass("link").attr("href");
             Double price = parse(itmElement.getElementsByClass("price ").first());
             Double discount = parse(itmElement.getElementsByClass("sale-flag-percent").first());
             Item item = new Item(subCategory, title, href, price, discount);
             System.out.println(item.toString());
+            items.add(item);
         }
         LOGGER.info("Found " + items.size() + " items for " + subCategory.getName());
         return items;
