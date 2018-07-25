@@ -63,15 +63,17 @@ public class ScrappingService {
         String queired = respEntity.getBody();
         Document doc = Jsoup.parse(queired);
         Elements itmElements = doc.getElementsByClass("sku -gallery");
+
         List<Item> items = new ArrayList<>();
         for (Element itmElement :
                 itmElements) {
+            System.out.println(itmElement.text());
             String title = itmElement.getElementsByClass("title").first().text();
             String href = itmElement.getElementsByClass("link").attr("href");
             Double price = parse(itmElement.getElementsByClass("price ").first());
             Double discount = parse(itmElement.getElementsByClass("sale-flag-percent").first());
             Item item = new Item(subCategory, title, href, price, discount);
-            // System.out.println(item.toString());
+            System.out.println(item.toString());
         }
         LOGGER.info("Found " + items.size() + " items for " + subCategory.getName());
         return items;

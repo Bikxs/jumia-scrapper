@@ -9,7 +9,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,8 +29,14 @@ public class Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		LOGGER.info("Application for Scrapping Jumia");
-		FileWriter fileWriter = new FileWriter( "jumia.csv", false);
-		fileWriter.write("Subcatory;Item;Price;Discount;\n");
+
+
+		PrintWriter pw = new PrintWriter(new FileWriter(new File("jumia.csv")));
+
+
+
+
+		pw.println("Subcatory;Item;Price;Discount");
 		List<SubCategory> subcategories = scrappingService.scrapeCategories();
 		Collections.shuffle(subcategories);
 		for (SubCategory subCategory :
@@ -37,12 +45,11 @@ public class Application implements CommandLineRunner {
 			List<Item> items = scrappingService.scrapeCategories(subCategory);
 			for (Item item:
 				 items) {
-				fileWriter.write(item.toCSVString() + "\n");
-
+				pw.println(item.toCSVString());
 				System.out.println("\t" + item.toString());
 			}
-			fileWriter.flush();
+			pw.flush();
 		}
-		fileWriter.close();
+		pw.close();;
 	}
 }
