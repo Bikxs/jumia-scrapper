@@ -2,6 +2,7 @@ package home.bikxs.jumiascrapper;
 
 import home.bikxs.jumiascrapper.data.Item;
 import home.bikxs.jumiascrapper.data.SubCategory;
+import home.bikxs.jumiascrapper.service.ScrappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,39 +23,21 @@ public class Application implements CommandLineRunner {
 	private ScrappingService scrappingService;
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
-
-
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
 		LOGGER.info("Application for Scrapping Jumia");
+		scrappingService.startFileUpdater();
 
-		PrintWriter pw = new PrintWriter(new FileWriter(new File("jumia.csv")));
-		PrintWriter pwFound = new PrintWriter(new FileWriter(new File("found_treasures.csv")));
-
-
-		pw.println("Subcatory;Item;Price;Discount;href");
-		pwFound.println("Subcatory;Item;Price;Discount;href");
 		List<SubCategory> subcategories = scrappingService.scrapeCategories();
 		Collections.shuffle(subcategories);
 		for (SubCategory subCategory :
 				subcategories) {
 			//System.out.println(subCategory.toString());
-			List<Item> items = scrappingService.scrapeCategories(subCategory);
-			for (Item item:
-				 items) {
-				pw.println(item.toCSVString());
-				if(item.getDiscount() >= 99.5){
-					pwFound.println(item.toCSVString());
-					System.out.println("\tFOUND!!! " + item.toString());
-				}
-				
-			}
-			pw.flush();
-			pwFound.flush();
+			scrappingService.scrapeCategories(subCategory);
+
 		}
-		pw.close();
-		pwFound.close();
+
 	}
 }
