@@ -90,9 +90,12 @@ public class SubCategoryScrapperThread implements Runnable {
                 if (DETAILED_LOGS)
                     LOGGER.info(Thread.currentThread().getName() + " Scrapped " + (item.toString()));
                 items.add(item);
-                if (item.getDiscount() >= 99.5) {
+                if (item.getDiscount() >= 99.0) {
+					
                     if (!(item.getDescription().contains("Purse")))
-                        System.out.println("FOUND!!! " + item.toString());
+                    if (!(item.getDescription().contains("Nubia M2 LITE 3GB RAM 64GB")))
+						if (!(item.getDescription().contains(" Generic Superman Cap Adjustable Baseball Cap Men Brand")))
+				System.err.println("FOUND!!! " + item.toString());
                 }
             }
             if (!deep_search) break;
