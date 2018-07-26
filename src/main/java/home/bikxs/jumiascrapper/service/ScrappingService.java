@@ -80,8 +80,15 @@ public class ScrappingService {
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 
-        Proxy proxy = new Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("172.23.12.226", 4145));
-        requestFactory.setProxy(proxy);
+		InetSocketAddress address = new InetSocketAddress("172.23.12.226", 4145);
+		try {
+			if(address.getAddress().isReachable(5000)){
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+				requestFactory.setProxy(proxy);
+			}
+		} catch (IOException e) {
+			System.out.println(address.getAddress().getHostAddress()+ ": " + e.getMessage());;
+		}
 
         return new RestTemplate(requestFactory);
     }
@@ -107,8 +114,8 @@ public class ScrappingService {
         public FileUpdater() throws IOException {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH");
             String timeStamp = simpleDateFormat.format(Calendar.getInstance().getTime());
-            pw = new PrintWriter(new FileWriter(new File("data\\jumia_items_" + timeStamp + ".csv")));
-            pwFound = new PrintWriter(new FileWriter(new File("data\\found_treasures_" + timeStamp + ".csv")));
+            pw = new PrintWriter(new FileWriter(new File("jumia_items_" + timeStamp + ".csv")));
+            pwFound = new PrintWriter(new FileWriter(new File("found_treasures_" + timeStamp + ".csv")));
 
             pw.println("Subcatory;Item;Price;Discount;href");
             pwFound.println("Subcatory;Item;Price;Discount;href");
