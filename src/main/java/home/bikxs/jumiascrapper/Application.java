@@ -37,7 +37,7 @@ public class Application implements CommandLineRunner {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				LOGGER.info("Scrapping all items every 5 mins task");
+				LOGGER.info("Scrapping all items every " + scrapDuration/1000/60 + " mins task");
 				Collections.shuffle(subcategories);
 				scrappingService.scrapeItems(subcategories);
 			}
