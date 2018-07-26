@@ -35,12 +35,11 @@ public class Application implements CommandLineRunner {
 		LOGGER.info("Application for Scrapping Jumia");
 
 
-		List<SubCategory> subcategories = scrappingService.scrapeCategories();
-
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
+				List<SubCategory> subcategories = scrappingService.scrapeCategories();
 				LOGGER.info("Scrapping all items every " + scrapDuration/1000/60 + " mins task");
 				scrappingService.startFileUpdater();
 				Collections.shuffle(subcategories);
