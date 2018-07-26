@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,7 +42,8 @@ public class ScrappingService {
     private volatile boolean finished = false;
     private ConcurrentMap<String, Item> itemConcurrentMap = new ConcurrentHashMap<>();
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(200);
-    ;
+    @Value("${application.deepsearch}")
+    private Boolean deep_search;
 
     public List<SubCategory> scrapeCategories() {
         LOGGER.info("Started scrape");
@@ -94,7 +96,7 @@ public class ScrappingService {
     }
 
     public void scrapeCategories(SubCategory subCategory) {
-        executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate));
+        executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate,deep_search));
     }
 
     public void startFileUpdater() {
