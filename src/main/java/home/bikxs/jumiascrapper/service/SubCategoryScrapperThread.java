@@ -1,5 +1,6 @@
 package home.bikxs.jumiascrapper.service;
 
+import home.bikxs.jumiascrapper.AnsiColors;
 import home.bikxs.jumiascrapper.data.Item;
 import home.bikxs.jumiascrapper.data.SubCategory;
 import org.jsoup.Jsoup;
@@ -90,18 +91,19 @@ public class SubCategoryScrapperThread implements Runnable {
                 if (DETAILED_LOGS)
                     LOGGER.info(Thread.currentThread().getName() + " Scrapped " + (item.toString()));
                 items.add(item);
-                if (item.getDiscount() >= 99.0) {
-					
-                    if (!(item.getDescription().contains("Purse")))
-                    if (!(item.getDescription().contains("Nubia M2 LITE 3GB RAM 64GB")))
-						if (!(item.getDescription().contains(" Generic Superman Cap Adjustable Baseball Cap Men Brand")))
-				System.err.println("FOUND!!! " + item.toString());
-                }
+                if (DETAILED_LOGS)
+                    if (item.isTreasure()) {
+                        System.out.println(AnsiColors.green("TREASURE!!! ") + item.toString());
+                    } else if (item.isBargain()) {
+                        System.out.println(AnsiColors.yellow("BARGAIN!!! ") + item.toString());
+                    }
             }
             if (!deep_search) break;
         }
         if (DETAILED_LOGS)
-            LOGGER.info(Thread.currentThread().getName() + " Found " + items.size() + " items for " + subCategory.getName());
+            LOGGER.info(Thread.currentThread().
+
+                    getName() + " Found " + items.size() + " items for " + subCategory.getName());
         return items;
     }
 

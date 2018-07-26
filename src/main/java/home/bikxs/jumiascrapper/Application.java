@@ -36,7 +36,7 @@ public class Application implements CommandLineRunner {
 
 
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
+		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				List<SubCategory> subcategories = scrappingService.scrapeCategories();
@@ -45,6 +45,6 @@ public class Application implements CommandLineRunner {
 				Collections.shuffle(subcategories);
 				scrappingService.scrapeItems(subcategories);
 			}
-		}, 0, scrapDuration);
+		}, 5000);
 	}
 }
