@@ -44,6 +44,9 @@ public class ScrappingService {
 	private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(200);
 	@Value("${application.deepsearch}")
 	private Boolean deep_search;
+	@Value("${application.verbose.logger}")
+	private Boolean DETAILED_LOGS;
+
 
 	public List<SubCategory> scrapeCategories() {
 		LOGGER.info("Started scrape");
@@ -53,6 +56,7 @@ public class ScrappingService {
 		Document doc = Jsoup.parse(queired);
 		Elements catElements = doc.getElementsByClass("subcategory");
 		List<SubCategory> subCategoryList = new ArrayList<>();
+
 		for (Element catElement :
 				catElements) {
 			String name = catElement.text();
@@ -97,7 +101,9 @@ public class ScrappingService {
 	}
 
 	public void scrapeCategories(SubCategory subCategory) {
-		executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate, deep_search));
+		if(DETAILED_LOGS)
+			LOGGER.info("Started SubCategory Thread for " + subCategory.toString());
+		executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate, deep_search,DETAILED_LOGS));
 	}
 
 	public void startFileUpdater() {

@@ -18,8 +18,12 @@ import java.util.TimerTask;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 	private static Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
 	@Value("${application.scrap_cycle}")
 	private Long scrapDuration;
+
+	@Value("${application.verbose.logger}")
+	private Boolean DETAILED_LOGS;
 	@Autowired
 	private ScrappingService scrappingService;
 	public static void main(String[] args) {
@@ -29,7 +33,7 @@ public class Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		LOGGER.info("Application for Scrapping Jumia");
-		scrappingService.startFileUpdater();
+
 
 		List<SubCategory> subcategories = scrappingService.scrapeCategories();
 
@@ -38,6 +42,7 @@ public class Application implements CommandLineRunner {
 			@Override
 			public void run() {
 				LOGGER.info("Scrapping all items every " + scrapDuration/1000/60 + " mins task");
+				scrappingService.startFileUpdater();
 				Collections.shuffle(subcategories);
 				scrappingService.scrapeItems(subcategories);
 			}
