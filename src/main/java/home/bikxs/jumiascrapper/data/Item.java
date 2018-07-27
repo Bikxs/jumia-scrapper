@@ -55,15 +55,37 @@ public class Item {
     }
 
     private String qoute(String input) {
-        return '"' + input.replace(",","").replace('"','\'') + '"';
+        return '"' + input.replace(",", "").replace('"', '\'') + '"';
     }
 
     public boolean isTreasure() {
-        if ((this.getDiscount() >= 99.0))
+        if ((this.getDiscount() >= 99.0)) {
+            if (getDescription().length() > 50) {
+                String name = getDescription().substring(0, 50);
+                switch (name) {
+                    case "Generic Hands-free Wireless Bluetooth Earphone Hea":
+                    case "Fashion Antique Silver Charm Bracelet & Bangle Wit":
+                    case "Fashion Home Toepost Flip Flops Women Flowers Sand":
+                    case "Fashion Women Flowers Sandal Home Toepost Flip Flo":
+                    case "Generic Bluetooth Min Speaker BM3D Subwoofer Hand-":
+                    case "Fashion BAMOER 5 Style Silver Color LOVE Snake Cha":
+                    case "Generic Mifa F1 Outdoor Portable Bluetooth Speaker":
+                    case "Generic Bluetooth 4.0 Speaker With LED Light For S":
+                    case "Generic Bluetooth Speaker LED Portable Wireless Sp":
+                    case "Generic Mifa Wireless Bluetooth Speaker Waterproof":
+                    case "Fashion Luxury Chain Link Bracelet For Women Ladie":
+                    case "Generic Wireless Bluetooth Speaker Waterproof Port":
+                    case "Generic Element T2 Bluetooth 4.2 Outdoor Water Res":
+
+                        return false;
+                }
+            }
+
             if (!(getDescription().contains("Purse")))
                 if (!(this.getDescription().contains("Nubia M2 LITE 3GB RAM 64GB")))
                     if (!(this.getDescription().contains("Superman Cap Adjustable Baseball")))
                         return true;
+        }
         return false;
     }
 

@@ -137,8 +137,8 @@ public class ScrappingService {
     }
 
     public class FileUpdater extends Thread implements Runnable {
-        PrintWriter pw;
-        PrintWriter pwFound;
+        private PrintWriter pw;
+        private PrintWriter pwFound;
 
         public FileUpdater() throws IOException {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH");
@@ -152,7 +152,7 @@ public class ScrappingService {
 
         @Override
         public void run() {
-
+            int zeroCount = 0;
             while (!finished) {
                 if (executor.getActiveCount() == 0 && executor.getCompletedTaskCount() > 0) {
                     if (executor.getCompletedTaskCount() == executor.getTaskCount()) {
@@ -175,16 +175,26 @@ public class ScrappingService {
                     if (item == null) continue;
                     pw.println(item.toCSVString());
                     if (item.isTreasure()) {
-                        System.out.println(AnsiColors.green("TREASURE!!! ") + item.toString());
-                        pwFound.println("TREASURE," + item.toCSVString());
+                        System.out.println(AnsiColors.green("TREASURE!!! " + item.getPrice()+ " " + item.getSubCategory().getName() + " " + item.getDescription()));
+                        pwFound.println("TREASURE,"  + item.toCSVString());
                     } else if (item.isBargain()) {
                         pwFound.println("BARGAIN," + item.toCSVString());
-                        System.out.println(AnsiColors.yellow("BARGAIN!!! ") + item.toString());
+                        //System.out.println(AnsiColors.yellow("BARGAIN!!! ") + item.toString());
                     }
                 }
-                LOGGER.info("Tasks Active=" + executor.getActiveCount() + " Completed=" + executor.getCompletedTaskCount() + " Total=" + executor.getTaskCount() + "");
-            }
 
+				pw.flush();
+				pwFound.flush();
+                LOGGER.info("Tasks Active=" + executor.getActiveCount() + " Completed=" + executor.getCompletedTaskCount() + " Total=" + executor.getTaskCount() + "");
+                if(items.isEmpty()){
+                    if(zeroCount>5){
+                        break;
+                    }
+                    zeroCount++;
+                }
+            }
+			pw.flush();
+			pwFound.flush();
             pw.close();
             pwFound.close();
 
