@@ -22,8 +22,8 @@ public class SlackNotificationService {
     private boolean allowSlackNotification;
 
     public SlackNotificationService(@Value("${slack.notifications.enabled}") boolean allowSlackNotification,
-                                    @Value("${slack.notifications.error.webhook}") String errorWebHook,
-                                    @Value("${slack.notifications.trading.webhook}") String tradingWebHook) {
+                                    @Value("${slack.notifications.webhook.error.jumiadeals}") String errorWebHook,
+                                    @Value("${slack.notifications.webhook.jumiadeals}") String tradingWebHook) {
         this.errorWebHook = errorWebHook;
         this.tradingWebHook = tradingWebHook;
         this.allowSlackNotification = allowSlackNotification;
