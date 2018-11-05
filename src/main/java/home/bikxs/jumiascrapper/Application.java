@@ -17,34 +17,55 @@ import java.util.TimerTask;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-	private static Logger LOGGER = LoggerFactory.getLogger(Application.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-	@Value("${application.scrap_cycle}")
-	private Long scrapDuration;
+    @Value("${application.scrap_cycle}")
+    private Long scrapDuration;
 
-	@Value("${application.verbose.logger}")
-	private Boolean DETAILED_LOGS;
-	@Autowired
-	private ScrappingService scrappingService;
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    @Value("${application.verbose.logger}")
+    private Boolean DETAILED_LOGS;
+    @Autowired
+    private ScrappingService scrappingService;
 
-	@Override
-	public void run(String... args) throws Exception {
-		LOGGER.info("Application for Scrapping Jumia");
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        LOGGER.info("Application for Scrapping Jumia");
 
 
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				List<SubCategory> subcategories = scrappingService.scrapeCategories();
-				LOGGER.info("Scrapping all items every " + scrapDuration/1000/60 + " mins task");
-				scrappingService.startFileUpdater();
-				Collections.shuffle(subcategories);
-				scrappingService.scrapeItems(subcategories);
-			}
-		}, 5000);
-	}
+        scrapeBeers();
+    }
+
+    private void scrapAll() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                List<SubCategory> subcategories = scrappingService.scrapeCategories();
+                LOGGER.info("Scrapping all items every " + scrapDuration / 1000 / 60 + " mins task");
+                scrappingService.startFileUpdater();
+                Collections.shuffle(subcategories);
+                scrappingService.scrapeItems(subcategories);
+            }
+        }, 5000);
+    }
+
+    private void scrapeBeers() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                String name = "BEERS";
+                String href = "https://www.jumia.co.ke/beers/";
+                String categoryName="Beer, Wine & Spirits";
+                SubCategory subCategory = new SubCategory(categoryName, name, href);
+                LOGGER.info("Scrapping alcoholic items every " + scrapDuration / 1000 / 60 + " mins task");
+                scrappingService.scrapeCategories(subCategory);
+            }
+        }, 5000);
+
+    }
 }

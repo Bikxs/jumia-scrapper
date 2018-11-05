@@ -40,6 +40,10 @@ public class Item {
 
     @Override
     public String toString() {
+        return (description) + "\n" + ("Price:" + price + " (discount=" + discount + ")") + "\n Link:" + (href);
+    }
+
+    public String toStringAnsi() {
         return AnsiColors.cyan(description) + " " + AnsiColors.purple("" + price) + " " + AnsiColors.blue(href);
     }
 
@@ -90,7 +94,7 @@ public class Item {
     }
 
     public boolean isBargain() {
-        if ((this.getDiscount() >= 70.0 && this.getPrice() >= 950.0)) {
+        if ((this.getDiscount() >= 50.0 && this.getPrice() >= 600.0)) {
             switch (subCategory.getCategory()) {
                 case "Audio":
                 case "Automotive":

@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +42,11 @@ public class ScrappingService {
     private final String BASE_URL = "https://www.jumia.co.ke/";
     private final HttpHeaders headers = createHeadeers();
     private volatile boolean finished = false;
+    @Autowired
+    private SlackNotificationService slackNotificationService;
+    @Value("${slack.notifications.enabled}")
+    private Boolean slack_notifications_enabled;
+
     private ConcurrentMap<String, Item> itemConcurrentMap = new ConcurrentHashMap<>();
     private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(200);
     @Value("${application.deepsearch}")
@@ -115,7 +121,7 @@ public class ScrappingService {
     public void scrapeCategories(SubCategory subCategory) {
         if (DETAILED_LOGS)
             LOGGER.info("Started SubCategory Thread for " + subCategory.toString());
-        executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate, deep_search, DETAILED_LOGS));
+        executor.execute(new SubCategoryScrapperThread(subCategory, headers, itemConcurrentMap, restTemplate, deep_search, DETAILED_LOGS,slackNotificationService,slack_notifications_enabled));
     }
 
     public void startFileUpdater() {

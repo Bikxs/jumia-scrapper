@@ -27,6 +27,8 @@ public class SubCategoryScrapperThread implements Runnable {
     private ConcurrentMap<String, Item> itemConcurrentMap;
     private Boolean deep_search;
     private Boolean DETAILED_LOGS;
+    private SlackNotificationService slackNotificationService;
+    private Boolean slack_notifications_enabled;
 
     @Override
     public void run() {
@@ -38,13 +40,17 @@ public class SubCategoryScrapperThread implements Runnable {
         }
     }
 
-    public SubCategoryScrapperThread(SubCategory subCategory, HttpHeaders headers, ConcurrentMap<String, Item> itemConcurrentMap, RestTemplate restTemplate, Boolean deep_search, Boolean DETAILED_LOGS) {
+    public SubCategoryScrapperThread(SubCategory subCategory, HttpHeaders headers, ConcurrentMap<String, Item> itemConcurrentMap, RestTemplate restTemplate, Boolean deep_search, Boolean DETAILED_LOGS
+            , SlackNotificationService slackNotificationService,
+                                     Boolean slack_notifications_enabled) {
         this.subCategory = subCategory;
         this.headers = headers;
         this.itemConcurrentMap = itemConcurrentMap;
         this.restTemplate = restTemplate;
         this.deep_search = deep_search;
         this.DETAILED_LOGS = DETAILED_LOGS;
+        this.slackNotificationService = slackNotificationService;
+        this.slack_notifications_enabled = slack_notifications_enabled;
     }
 
     public List<Item> scrapeCategories() {
@@ -93,9 +99,20 @@ public class SubCategoryScrapperThread implements Runnable {
                 items.add(item);
                 if (DETAILED_LOGS)
                     if (item.isTreasure()) {
-                        System.out.println(AnsiColors.green("TREASURE!!! ") + item.toString());
+                        if (slack_notifications_enabled) {
+                            slackNotificationService.postStackMessage("TREASURE BEER" + item.getDescription(),item.toString());
+                        } else {
+                            System.out.println(AnsiColors.green("TREASURE!!! ") + item.toString());
+                        }
+
                     } else if (item.isBargain()) {
-                        System.out.println(AnsiColors.yellow("BARGAIN!!! ") + item.toString());
+                        if (slack_notifications_enabled) {
+                            slackNotificationService.postStackMessage("BARGAIN BEER" + item.getDescription(),item.toString());
+                        } else {
+                            System.out.println(AnsiColors.yellow("BARGAIN!!! ") + item.toString());
+                        }
+
+
                     }
             }
             if (!deep_search) break;
