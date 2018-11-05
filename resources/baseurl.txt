@@ -1,0 +1,3 @@
+https://api.jumia.com/mobapi/
+
+NB: Most likely each request carries a country identifier to filter by country / country code e.g. you can try countryCode=ke  
